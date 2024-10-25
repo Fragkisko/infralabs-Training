@@ -1,0 +1,35 @@
+@import "node_modules/ol/ol.css";
+
+html, body {
+  margin: 0;
+  height: 100%;
+}
+#map {
+  position: absolute;
+  top: 40px;
+  bottom: 0px;
+  width: 100%;
+}
+#toggleLayerButton {
+  position: fixed;            /* Fix the button position relative to the viewport */
+  top: 0px;                  /* Distance from the top of the screen */
+  left: 50%;                  /* Center horizontally */
+  transform: translateX(-50%); /* Offset by 50% of its own width to fully center */
+  background-color: #4CAF50; /* Green background */
+  border: none;              /* Remove border */
+  color: white;               /* White text */
+  padding: 10px 20px;         /* Padding for the button */
+  text-align: center;         /* Center text */
+  text-decoration: none;      /* Remove text underline */
+  display: inline-block;      /* Keep it inline */
+  font-size: 16px;            /* Text size */
+  margin: 10px 5px;           /* Margin around the button */
+  cursor: pointer;            /* Pointer cursor on hover */
+  border-radius: 8px;         /* Rounded corners */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Light shadow */
+  transition: background-color 0.3s ease;  /* Smooth background transition */
+}
+
+#toggleLayerButton:hover {
+  background-color: #45a049;  /* Darker green on hover */
+}
