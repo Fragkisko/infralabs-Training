@@ -7,9 +7,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Openlayers project for InfraLabs</title>
   </head>
-  <body style="background-color: rgb(165, 66, 0);">
-    <button id="toggleLayerButton">Toggle Trails and Points</button>
-    <div id="map"></div>
+  <body style="background-color: rgb(0, 0, 0);">
+    
+    <div id="container">
+      
+      <div id="info-panel">
+        <button id="toggleLayerButton">Hide Trails and Points</button>
+        <h2>Vessel Information</h2>
+        <p><strong>Name:</strong> Ocean1 Voyager</p>
+        <p><strong>Type:</strong> Cargo2</p>
+        <p><strong>Status:</strong> In Transit3</p>
+        <!-- Additional vessel information can go here -->
+      </div>
+      <div id="map"></div>
+    </div>
     <script type="module" src="./main.js"></script>
   </body>
   <link rel="stylesheet" type="text/css" href="data:text/css,">

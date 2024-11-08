@@ -1,0 +1,152 @@
+//old mock data
+// var mockData = {
+//   "vesselPositions": [
+
+       
+//         {
+//           "lat": 25.276987,
+//           "lon": 55.296249,
+//           "timestamp": "2024-10-21T10:00:00Z",
+//           "speed": 14.5,
+//           "direction": "NNE",
+//           "temperature": 29, 
+//           "windSpeed": 15, 
+//           "waveHeight": 1.2, 
+//           "event": "Port Departure"
+//         },
+//         {
+//           "lat": 25.285987,
+//           "lon": 55.302249,
+//           "timestamp": "2024-10-21T10:15:00Z",
+//           "speed": 13.8,
+//           "direction": "NE",
+//           "temperature": 28,
+//           "windSpeed": 20,
+//           "waveHeight": 1.5,
+//           "event": null
+//         },
+//         {
+//           "lat": 25.295987,
+//           "lon": 55.310249,
+//           "timestamp": "2024-10-21T10:30:00Z",
+//           "speed": 12.7,
+//           "direction": "ENE",
+//           "temperature": 27,
+//           "windSpeed": 18,
+//           "waveHeight": 1.7,
+//           "event": null
+//         },
+//         {
+//           "lat": 25.305987,
+//           "lon": 55.320249,
+//           "timestamp": "2024-10-21T10:45:00Z",
+//           "speed": 13.0,
+//           "direction": "E",
+//           "temperature": 26,
+//           "windSpeed": 22,
+//           "waveHeight": 1.9,
+//           "event": "Speed Change"
+//         },
+//         {
+//           "lat": 25.325987,
+//           "lon": 55.330249,
+//           "timestamp": "2024-10-21T11:15:00Z",
+//           "speed": 14.5,
+//           "direction": "SE",
+//           "temperature": 26,
+//           "windSpeed": 17,
+//           "waveHeight": 2.0,
+//           "event": null
+//         },
+//         {
+//           "lat": 25.345987,
+//           "lon": 55.360249,
+//           "timestamp": "2024-10-21T11:45:00Z",
+//           "speed": 15.0,
+//           "direction": "S",
+//           "temperature": 25,
+//           "windSpeed": 25,
+//           "waveHeight": 1.8,
+//           "event": "Restricted Zone Entry Warning"
+//         },
+//         {
+//           "lat": 25.355987,
+//           "lon": 55.370249,
+//           "timestamp": "2024-10-21T12:00:00Z",
+//           "speed": 16.2,
+//           "direction": "SSW",
+//           "temperature": 24,
+//           "windSpeed": 30,
+//           "waveHeight": 2.2,
+//           "event": null
+//         },
+//         {
+//           "lat": 25.385987,
+//           "lon": 55.400249,
+//           "timestamp": "2024-10-21T13:00:00Z",
+//           "speed": 15.1,
+//           "direction": "W",
+//           "temperature": 24,
+//           "windSpeed": 22,
+//           "waveHeight": 1.5,
+//           "event": "Speed Change"
+//         },
+//         {
+//           "lat": 25.415987,
+//           "lon": 55.430249,
+//           "timestamp": "2024-10-21T13:30:00Z",
+//           "speed": 12.4,
+//           "direction": "NNW",
+//           "temperature": 23,
+//           "windSpeed": 19,
+//           "waveHeight": 1.2,
+//           "event": "Port Arrival"
+//         }
+//       ]
+      
+        
+      
+//     }
+  
+
+// Loop through the mock data to create features and add them to the vector source
+//1 mockData.vesselPositions.forEach(position => {
+//   // Create a new feature for each position
+//   const feature = new Feature({
+//     geometry: new Point(fromLonLat([position.lon, position.lat])), // Create a point geometry
+  
+//     data: {
+//       timestamp: position.timestamp,
+//       speed: position.speed,
+//       direction: position.direction
+//     }
+  
+//   });//   // Style the feature (green dot)
+//   feature.setStyle(new Style({
+//     image: new CircleStyle({
+//       radius: 5, // Size of the dot
+//       fill: new Fill({ color: 'green' }), // Fill color of the dot
+//       stroke: new Stroke({ color: 'black', width: 1 }) // Optional stroke around the dot
+//     })
+//   }));
+
+//   // Add the feature to the vector source
+//   vectorSource.addFeature(feature);
+// });
+// 2 const lineString = new LineString(coordinates);
+
+// // Create a feature for the line
+// const lineFeature = new Feature({
+//   geometry: lineString
+// });
+// // Style the line (e.g., blue color)
+// lineFeature.setStyle(new Style({
+//   stroke: new Stroke({
+//     color: 'blue', // Line color
+//     width: 2 // Line width
+//   })
+// }));
+
+// 2 // Add the line feature to the vector source
+// vectorSource.addFeature(lineFeature);
+// // Add the vector layer to the map

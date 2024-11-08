@@ -3,33 +3,69 @@
 html, body {
   margin: 0;
   height: 100%;
+  font-family: Arial, sans-serif;
+}
+#container {
+  display: flex;
+  height: 100vh; /* Full viewport height */
+  width: 100vw;  /* Full viewport width */
+}
+#info-panel {
+  width: 15%; /* 25% width */
+  padding: 20px;
+  background-color: #f5f5f5; /* Light background */
+  border-right: 1px solid #ccc; /* Optional border */
+  overflow-y: auto; /* Allow scrolling if content overflows */
 }
 #map {
-  position: absolute;
-  top: 40px;
+  /* position: absolute; */
+  top: 0px;
   bottom: 0px;
-  width: 100%;
+  width: 85%;
+  height: 100%;
 }
 #toggleLayerButton {
-  position: fixed;            /* Fix the button position relative to the viewport */
-  top: 0px;                  /* Distance from the top of the screen */
-  left: 50%;                  /* Center horizontally */
-  transform: translateX(-50%); /* Offset by 50% of its own width to fully center */
-  background-color: #4CAF50; /* Green background */
-  border: none;              /* Remove border */
-  color: white;               /* White text */
-  padding: 10px 20px;         /* Padding for the button */
-  text-align: center;         /* Center text */
-  text-decoration: none;      /* Remove text underline */
-  display: inline-block;      /* Keep it inline */
-  font-size: 16px;            /* Text size */
-  margin: 10px 5px;           /* Margin around the button */
-  cursor: pointer;            /* Pointer cursor on hover */
-  border-radius: 8px;         /* Rounded corners */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Light shadow */
-  transition: background-color 0.3s ease;  /* Smooth background transition */
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #007bff; /* Blue background */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px; /* Space above the button */
+  transition: background-color 0.3s; /* Smooth transition */
 }
 
 #toggleLayerButton:hover {
   background-color: #45a049;  /* Darker green on hover */
+}
+
+#tooltip {
+  position: absolute;
+  background-color: gray;
+  color: white;
+  padding: 5px;
+  border-radius: 5px;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 1000;
+  white-space: nowrap;
+}
+
+
+/* Responsive adjustments (optional) */
+@media (max-width: 768px) {
+  #container {
+    flex-direction: column; /* Stack vertically on smaller screens */
+  }
+
+  #info-panel {
+    width: 100%; /* Full width on smaller screens */
+    height: 30%; /* Adjust height */
+  }
+
+  #map {
+    width: 100%; /* Full width on smaller screens */
+    height: 70%; /* Adjust height */
+  }
 }

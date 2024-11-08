@@ -1,0 +1,131 @@
+{
+  "vessels": [
+    {
+      "name": "Ocean Voyager",
+      "type": "Cargo",
+      "IMO": "1234567",
+      "status": "In Transit",
+      "trail": [
+        {
+          "lat": 25.276987,
+          "lon": 55.296249,
+          "timestamp": "2024-10-21T10:00:00Z",
+          "speed": 14.5,
+          "direction": "NNE",
+          "temperature": 29, 
+          "windSpeed": 15, 
+          "waveHeight": 1.2, 
+          "event": "Port Departure"
+        },
+        {
+          "lat": 25.285987,
+          "lon": 55.302249,
+          "timestamp": "2024-10-21T10:15:00Z",
+          "speed": 13.8,
+          "direction": "NE",
+          "temperature": 28,
+          "windSpeed": 20,
+          "waveHeight": 1.5,
+          "event": null
+        },
+        {
+          "lat": 25.295987,
+          "lon": 55.310249,
+          "timestamp": "2024-10-21T10:30:00Z",
+          "speed": 12.7,
+          "direction": "ENE",
+          "temperature": 27,
+          "windSpeed": 18,
+          "waveHeight": 1.7,
+          "event": null
+        },
+        {
+          "lat": 25.305987,
+          "lon": 55.320249,
+          "timestamp": "2024-10-21T10:45:00Z",
+          "speed": 13.0,
+          "direction": "E",
+          "temperature": 26,
+          "windSpeed": 22,
+          "waveHeight": 1.9,
+          "event": "Speed Change"
+        },
+        {
+          "lat": 25.325987,
+          "lon": 55.330249,
+          "timestamp": "2024-10-21T11:15:00Z",
+          "speed": 14.5,
+          "direction": "SE",
+          "temperature": 26,
+          "windSpeed": 17,
+          "waveHeight": 2.0,
+          "event": null
+        },
+        {
+          "lat": 25.345987,
+          "lon": 55.360249,
+          "timestamp": "2024-10-21T11:45:00Z",
+          "speed": 15.0,
+          "direction": "S",
+          "temperature": 25,
+          "windSpeed": 25,
+          "waveHeight": 1.8,
+          "event": "Restricted Zone Entry Warning"
+        },
+        {
+          "lat": 25.355987,
+          "lon": 55.370249,
+          "timestamp": "2024-10-21T12:00:00Z",
+          "speed": 16.2,
+          "direction": "SSW",
+          "temperature": 24,
+          "windSpeed": 30,
+          "waveHeight": 2.2,
+          "event": null
+        },
+        {
+          "lat": 25.385987,
+          "lon": 55.400249,
+          "timestamp": "2024-10-21T13:00:00Z",
+          "speed": 15.1,
+          "direction": "W",
+          "temperature": 24,
+          "windSpeed": 22,
+          "waveHeight": 1.5,
+          "event": "Speed Change"
+        },
+        {
+          "lat": 25.415987,
+          "lon": 55.430249,
+          "timestamp": "2024-10-21T13:30:00Z",
+          "speed": 12.4,
+          "direction": "NNW",
+          "temperature": 23,
+          "windSpeed": 19,
+          "waveHeight": 1.2,
+          "event": "Port Arrival"
+        }
+      ],
+      "geofencingZones": [
+        {
+          "name": "Restricted Zone",
+          "coordinates": [
+            { "lat": 25.335987, "lon": 55.340249 },
+            { "lat": 25.375987, "lon": 55.390249 },
+            { "lat": 25.355987, "lon": 55.370249 }
+          ],
+          "warningMessage": "Entering restricted area!"
+        },
+        {
+          "name": "High Traffic Area",
+          "coordinates": [
+            { "lat": 25.276987, "lon": 55.296249 },
+            { "lat": 25.285987, "lon": 55.302249 },
+            { "lat": 25.315987, "lon": 55.330249 }
+          ],
+          "warningMessage": "High traffic zone, proceed with caution."
+        }
+      ]
+    }
+  ]
+}
