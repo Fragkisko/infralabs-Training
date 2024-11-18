@@ -43,19 +43,10 @@ const map = new Map({
     zoom: 10
   })
 });
-// "lat": 25.315987,
-//"lon": 55.376249,
 
-
-// Create a new VectorSource for heatmap points
-const heatmapSource = new VectorSource();
-
-
-
-//"lat": 25.415987,
-//"lon": 55.430249,
-// Array to hold multiple vessels
 const vesselsArray = [];
+
+
 
 // Extract the vessel from the mock data
 const mockData = {
@@ -70,10 +61,10 @@ const mockData = {
           "lat": 25.276987,
           "lon": 55.296249,
           "timestamp": "2024-10-21T10:00:00Z",
-          "speed": 14.5,
+          "speed": 19.5,
           "direction": "NNE",
           "temperature": 29, 
-          "windSpeed": 15, 
+          "windSpeed": 1, 
           "waveHeight": 1.2, 
           "event": "Port Departure"
         },
@@ -81,10 +72,10 @@ const mockData = {
           "lat": 25.285987,
           "lon": 55.302249,
           "timestamp": "2024-10-21T10:15:00Z",
-          "speed": 13.8,
+          "speed": 33.8,
           "direction": "NE",
           "temperature": 28,
-          "windSpeed": 20,
+          "windSpeed": 9,
           "waveHeight": 1.5,
           "event": null
         },
@@ -92,7 +83,7 @@ const mockData = {
           "lat": 25.295987,
           "lon": 55.310249,
           "timestamp": "2024-10-21T10:30:00Z",
-          "speed": 12.7,
+          "speed": 22.7,
           "direction": "ENE",
           "temperature": 27,
           "windSpeed": 18,
@@ -103,7 +94,7 @@ const mockData = {
           "lat": 25.305987,
           "lon": 55.320249,
           "timestamp": "2024-10-21T10:45:00Z",
-          "speed": 13.0,
+          "speed": 3.0,
           "direction": "E",
           "temperature": 26,
           "windSpeed": 22,
@@ -114,10 +105,10 @@ const mockData = {
           "lat": 25.325987,
           "lon": 55.330249,
           "timestamp": "2024-10-21T11:15:00Z",
-          "speed": 14.5,
+          "speed": 16.5,
           "direction": "SE",
           "temperature": 26,
-          "windSpeed": 17,
+          "windSpeed": 37,
           "waveHeight": 2.0,
           "event": null
         },
@@ -125,7 +116,7 @@ const mockData = {
           "lat": 25.345987,
           "lon": 55.360249,
           "timestamp": "2024-10-21T11:45:00Z",
-          "speed": 15.0,
+          "speed": 19.0,
           "direction": "S",
           "temperature": 25,
           "windSpeed": 25,
@@ -237,6 +228,8 @@ mockData.vessels.forEach((vessel, index) => {
 
 
 
+
+
 const vectorSource = new VectorSource();
 
 // Create a new Vector Layer to hold the vessel position features
@@ -317,23 +310,38 @@ lineFeature.setStyle(new Style({
 vectorSource.addFeature(lineFeature);
 });
 
+// Create a vector source to hold speed features
+const speedSource = new VectorSource();
+
+// Add speed points to the vector source based on the vessel trail data
+mockData.vessels.forEach((point) => {
+  const speed = point.speed; // Access speed from mock data
+
+  // Create a feature for each point and set geometry & speed attribute
+  const feature = new Feature({
+    geometry: new Point(fromLonLat([point.longitude, point.latitude])),
+    speed: speed, // Set speed as an attribute for weighting
+  });
+
+  speedSource.addFeature(feature); // Add feature to the source
+});
 
 map.addLayer(vectorLayer);
-console.log("opa re1")
 
 // Update Info Panel Function
 function updateInfoPanel(vesselInfo, trailInfo) {
-  console.log("opa re")
 
   const infoPanel = document.getElementById('info-panel');
 
   infoPanel.innerHTML = `
     <button id="toggleLayerButton">Hide Trails and Points</button>
     <h2>Vessel Information</h2>
+    
     <p><strong>Name:</strong> ${vesselInfo.name}</p>
     <p><strong>Type:</strong> ${vesselInfo.type}</p>
     <p><strong>Status:</strong> ${vesselInfo.status}</p>
     <h3>Trail Information</h3>
+
     <p><strong>Temperature:</strong> ${trailInfo.temperature}°C</p>
     <p><strong>Wind Speed:</strong> ${trailInfo.windSpeed} knots</p>
     <p><strong>Wave Height:</strong> ${trailInfo.waveHeight} m</p>
@@ -359,7 +367,6 @@ function updateInfoPanel(vesselInfo, trailInfo) {
 
 // Map click event to detect green dot clicks
 map.on('click', function (evt) {
-  console.log("opa r2e")
   map.forEachFeatureAtPixel(evt.pixel, function (feature) {
     const vesselInfo = feature.get('vesselInfo');
     const trailInfo = feature.get('trailInfo');
@@ -368,7 +375,6 @@ map.on('click', function (evt) {
  const geometry = feature.getGeometry();
  if (geometry) {
    const coords = geometry.getCoordinates();
-   console.log("Feature coordinates:", coords);
  }
 
     if (vesselInfo && trailInfo) {
@@ -455,6 +461,12 @@ function interpolatePosition(start, end, progress) {
   return fromLonLat([lon, lat]);
 }
 
+function isNearZone(shipLat, shipLon, zoneLat, zoneLon, threshold = 0.001) {
+  const latDiff = Math.abs(shipLat - zoneLat);
+  const lonDiff = Math.abs(shipLon - zoneLon);
+  return latDiff <= threshold && lonDiff <= threshold;
+}
+
 // Store the line features (for turning the line red)
 const lineFeatures = [];
 
@@ -465,6 +477,9 @@ function moveShipGradually() {
   // Get current and next points in the trail
   const currentPoint = fromLonLat([trail[trailIndex].lon, trail[trailIndex].lat]);
   const nextPoint = fromLonLat([trail[trailIndex + 1].lon, trail[trailIndex + 1].lat]);
+
+  const speed = trail[trailIndex].speed;          // Get speed from current trail point
+  const speedColor = getSpeedColor(speed); 
 
 // Find the current feature at the specified point
 const currentFeature = vectorSource.getFeatures().find(f => {
@@ -477,18 +492,7 @@ if (currentFeature) {
   currentFeature.setStyle(new Style({
     image: new CircleStyle({
       radius: 5,
-      fill: new Fill({ color: 'purple' }),
-      stroke: new Stroke({ color: 'black', width: 1 })
-    })
-  }));
-}
-
-if (currentFeature) {
-  // Set style to red for the current feature while preserving the data
-  currentFeature.setStyle(new Style({
-    image: new CircleStyle({
-      radius: 5,
-      fill: new Fill({ color: 'purple' }),
+      fill: new Fill({ color: 'blue' }),
       stroke: new Stroke({ color: 'black', width: 1 })
     })
   }));
@@ -500,38 +504,37 @@ if (currentFeature) {
 
   // Set the ship's new position
   shipFeature.getGeometry().setCoordinates([newX, newY]);
+  console.log(`Ship coordinates updated: Longitude: ${newX}, Latitude: ${newY}`);
+
+  // After updating vessel's position in moveShipGradually
+  const currentPosition = shipFeature.getGeometry().getCoordinates();
+
+  checkGeofencingAlerts(currentPosition);
 
   // If the ship reaches the next point (fraction >= 1), update the trail and change point color
   if (fraction >= 1.0) {
-    // Update the trail with the red color for the passed point
+// Update the trail with the red color for the passed point
     const pointFeature = new Feature({
-      geometry: new Point(fromLonLat([trail[trailIndex].lon, trail[trailIndex].lat]))
-    });
-    
+    geometry: new Point(fromLonLat([trail[trailIndex].lon, trail[trailIndex].lat]))
+});
 
-    // Set the point color to red as soon as the ship passes over it
-    pointFeature.setStyle(new Style({
-      image: new CircleStyle({
-        radius: 5, // Size of the dot
-        fill: new Fill({ color: 'purple' }), // Turn point to red after ship passes
-        stroke: new Stroke({ color: 'black', width: 1 }),
-      })
-    }));
 
-    vectorSource.addFeature(pointFeature); // Add the red point to the vector source
 
-    // Add the line between current and next point to the vector source
-    const lineCoordinates = [currentPoint, nextPoint]; // The segment between the two points
+
+
+    const nextSpeed = trail[trailIndex + 1].speed;  // Get the speed at the next point
+    const lineColor = getSpeedColor(nextSpeed);  // Determine color based on speed
+
+    const lineCoordinates = [currentPoint, nextPoint];
     const lineString = new LineString(lineCoordinates);
     const lineFeature = new Feature({
       geometry: lineString
     });
-
-    // Initially, make the line blue
+    
     lineFeature.setStyle(new Style({
       stroke: new Stroke({
-        color: 'yellow', // Line color
-        width: 5 // Line width
+        color: lineColor,  // Use the color based on next point's speed
+        width: 5
       })
     }));
 
@@ -546,17 +549,6 @@ if (currentFeature) {
     fraction += stepSize; // Gradually increase fraction to move the ship smoothly
   }
 
-  // **Change the line color to red immediately after passing a point**
-  if (fraction >= 1.0 && lineFeatures.length > 0) {
-    // Change the previous line segment color to red
-    const previousLineFeature = lineFeatures[trailIndex - 1];
-    previousLineFeature.setStyle(new Style({
-      stroke: new Stroke({
-        color: 'yellow', // Change line to red
-        width: 3 // Line width
-      })
-    }));
-  }
 }
 
 
@@ -564,42 +556,7 @@ if (currentFeature) {
 const animationInterval = setInterval(moveShipGradually, 1000); 
 
 
-// Style function for each point in the trail
-function styleFunction(feature) {
-  const event = feature.get('event'); // Assuming event is stored in each feature's properties
-  const iconSrc = getIcon(event);
-
-  if (iconSrc) {
-    return new Style({
-      image: new Icon({
-        src: iconSrc,
-        scale: 0.5, // Adjust scale as needed
-      }),
-    });
-  } else {
-    return new Style({
-      image: new CircleStyle({
-        radius: 5,
-        fill: new Fill({ color: 'blue' }), // Default dot color
-        stroke: new Stroke({ color: 'white', width: 1 }),
-      }),
-    });
-  }
-}
-// Define a function that returns the color based on the event
-function getPointColor(event) {
-  switch (event) {
-      case 'Port Departure':
-          return 'pink'; // Port Departure event -> pink
-      case 'Speed Change':
-          return 'yellow'; // Speed Change event -> yellow
-      case 'Port Arrival':
-          return 'black'; // Port Arrival event -> black
-      default:
-          return 'green'; // For null or undefined event -> green
-  }
-}
-// 2. Create a function to style the point based on the event
+//Create a function to style the point based on the event
 function createPointStyle(feature) {
   const event = feature.get('event');  // Get the event from the feature
   const color = getPointColor(event);  // Get the color based on the event
@@ -618,65 +575,115 @@ function createPointStyle(feature) {
   });
 }
 
-// Create a new Heatmap Layer
-const heatmapLayer = new Heatmap({
-  source: heatmapSource,
-  blur: 15,  // Adjust the blur factor for smoother or sharper heatmap
-  radius: 5, // Radius of each point's influence
-  weight: function (feature) {
-    // Set weight based on a metric, e.g., speed
-    const speed = feature.get('trailInfo').speed;
-    return speed;  // Assigning speed as the weight for the heatmap
-  }
-});
+function getSpeedColor(speed) {
+  if (speed <= 5) return 'green';          // Low speed
+  if (speed <= 10) return 'yellow';         // Medium speed
+  if (speed <= 15) return 'orange';         // low  High speed
+  if (speed <= 20) return 'brown';          // Low speed
+  return 'red';                             // Very high speed
+}
+// Reference to the dropdown element
+const vesselSelect = document.getElementById('vesselSelect');
 
-
-// Add the heatmap layer to the map
-map.addLayer(heatmapLayer);
-// Assuming vessels data is an array of vessel objects
+// Populate the dropdown with vessels from mock data
 mockData.vessels.forEach(vessel => {
-  const trail = vessel.trail;
-  const shipFeature = ShipFeature(trail[0].lat, trail[0].lon); // Start at the first point
-  
-  map.addLayer(new ol.layer.Vector({
-    source: new ol.source.Vector({ features: [shipFeature] })
-  }));
-
-  let currentPointIndex = 0;
-
-  // Function to move the ship along the trail
-  function moveShip() {
-    if (currentPointIndex < trail.length - 1) {
-      const currentPoint = trail[currentPointIndex];
-      const nextPoint = trail[currentPointIndex + 1];
-
-      // Calculate the time interval between points
-      const timeInterval = new Date(nextPoint.timestamp) - new Date(currentPoint.timestamp);
-
-      // Smoothly transition between points using a linear interpolation
-      const animationStartTime = Date.now();
-
-      const animate = () => {
-        const elapsed = Date.now() - animationStartTime;
-        const fraction = Math.min(elapsed / timeInterval, 1); // Cap fraction at 1
-
-        const currentLat = currentPoint.lat + fraction * (nextPoint.lat - currentPoint.lat);
-        const currentLon = currentPoint.lon + fraction * (nextPoint.lon - currentPoint.lon);
-
-        // Update the ship's position
-        shipFeature.getGeometry().setCoordinates(ol.proj.fromLonLat([currentLon, currentLat]));
-
-        // Check if we need to move to the next point
-        if (fraction < 1) {
-          requestAnimationFrame(animate);
-        } else {
-          currentPointIndex++;
-          moveShip(); // Move to the next point in the trail
-        }
-      };
-      animate();
-    }
-  }
-
-  moveShip(); // Start moving the ship along its trail
+  const option = document.createElement('option');
+  option.value = vessel.IMO;  // Set IMO or any unique identifier as the value
+  option.textContent = vessel.name;  // Display vessel name
+  vesselSelect.appendChild(option);
 });
+// Define a variable to store the selected vessel's trail
+let selectedVesselTrail = [];
+
+// Optional: Handle dropdown change to display selected vessel info
+vesselSelect.addEventListener('change', function() {
+  const selectedIMO = this.value;
+  const selectedVessel = mockData.vessels.find(v => v.IMO === selectedIMO);
+  console.log('Selected Vessel:', selectedVessel);
+  // Update other info panel elements with selected vessel's data as needed
+  
+});
+
+// Function to create geofencing zones on the map
+function addGeofencingZones() {
+  mockData.vessels.forEach(vessel => {
+    vessel.geofencingZones.forEach(zone => {
+      const zoneCoordinates = zone.coordinates.map(coord => fromLonLat([coord.lon, coord.lat]));
+      const polygon = new Polygon([zoneCoordinates]);
+      const feature = new Feature({
+        geometry: polygon,
+        name: zone.name,
+        warningMessage: zone.warningMessage,
+      });
+
+      // Set a style for the zone (optional)
+      feature.setStyle(new Style({
+        stroke: new Stroke({
+          color: 'red',
+          width: 2,
+        }),
+        fill: new Fill({
+          color: 'rgba(255, 0, 0, 0.1)',
+        }),
+      }));
+
+      vectorSource.addFeature(feature);
+    });
+  });
+}
+function checkGeofencingAlerts(currentPosition) {
+  const features = vectorSource.getFeatures(); // Get all features in vector source (includes zones and vessel trail points)
+  features.forEach(feature => {
+    if (feature.getGeometry().getType() === 'Polygon') {
+      const polygon = feature.getGeometry();
+      const distance = polygon.getClosestPoint(currentPosition);
+
+      // Trigger alert if within a certain threshold distance
+      if (distance < 500) {  // Adjust distance as needed
+        displayGeofencingAlert(feature.get('warningMessage'));
+      }
+    }
+  });
+}
+// Function to display geofencing alert in the info panel
+function displayGeofencingAlert(message) {
+  const infoPanel = document.getElementById('infoPanel');  // Adjust ID as needed
+  infoPanel.innerHTML = `<p><strong>Alert:</strong> ${message}</p>`;
+}
+
+
+
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371000; // Earth's radius in meters
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c; // Distance in meters
+}
+
+
+function checkGeofencingAlert(currentLat, currentLon, vessel) {
+  // Define proximity threshold (in meters)
+  const proximityThreshold = 500; 
+
+  vessel.geofencingZones.forEach(zone => {
+    zone.coordinates.forEach(coord => {
+      const distance = calculateDistance(currentLat, currentLon, coord.lat, coord.lon);
+
+      // If within threshold, show warning in the info panel
+      if (distance <= proximityThreshold) {
+        displayWarning(zone.warningMessage);
+      }
+    });
+  });
+}
+
+// Function to display warning in the info panel
+function displayWarning(message) {
+  const infoPanel = document.getElementById('infoPanel');
+  infoPanel.textContent = `Alert: ${message}`;
+}
